@@ -8,17 +8,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // responseBody can be error message, arrary of locations, empty array
-var renderHomepage = function (req, res, responseBody) {
-
-    var message;
-    if (!(responseBody instanceof Array)) {
-        message = "API lookup error";
-        responseBody = [];// the view expects an array
-    } else {
-        if (!responseBody.length) {
-            message = "No place found nearby"
-        }
-    }
+var renderHomepage = function (req, res) {
     res.render('locations-list', {
         title: 'Loc8r - find a place to work with wifi',
         pageHeader: {
@@ -26,37 +16,12 @@ var renderHomepage = function (req, res, responseBody) {
             strapline: 'Find places to work with wifi near you!'
         },
         sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about. Perhaps with coffee, cake or a pint? Let Loc8r help you find the place you're looking for.",
-        locations: responseBody,
-        message: message
     });
 }
 
 /* GET 'home' page */
 module.exports.homelist = function (req, res) {
-    var requestOptions, path;
-    path = '/api/locations'
-    requestOptions = {
-        url: apiOptions.server + path,
-        method: "GET",
-        json: {},
-        qs: {
-            lng: -0.792929,
-            lat: 52.3242,
-            maxDistance: 2000000000000000
-        }
-    }
-
-    request(requestOptions, function (err, response, body) {
-        var i, data;
-        data = body;
-
-        if (response.statusCode === 200 && data.length) {
-            for (i = 0; i < data.length; i++) {
-                data[i].distance = _formatDistance(data[i].distance);
-            }
-        }
-        renderHomepage(req, res, data)
-    });
+    renderHomepage(req, res)
 };
 
 // Given Distance is in km
@@ -155,7 +120,8 @@ var renderReviewForm = function (req, res, locDetail) {
         pageHeader: {
             title: 'Review ' + locDetail.name
         },
-        error: req.query.err // This
+        error: req.query.err,
+        url: req.originalUrl
     });
 }
 

@@ -25,6 +25,8 @@ var theEarth = (function () {
     };
 })();
 
+
+
 // Creates a location and adds it to the database
 module.exports.locationsCreate = function (req, res) {
 
